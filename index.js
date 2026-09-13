@@ -35,11 +35,13 @@ const client = new Client({
 const GUILD_ID = process.env.GUILD_ID;
 const CLIENT_ID = process.env.CLIENT_ID;
 
-// IDs configurados conforme solicitado
+// CONFIGURAÇÃO DE CANAIS E CARGOS DA SOCIEDADE IMPERIAL
 const VOICE_24H_CHANNEL_ID = '1548519077507498044';
+const WELCOME_CHANNEL_ID = '1548497517107355759'; // Canal de boas-vindas configurado
 const ROLE_FACCAO_ID = '1548475677030883415'; // Cargo principal (Sociedade Imperial)
 const ROLE_MECANICA_RODEO_ID = '1548477524474855476'; // Mecânica Rodeo
 const ROLE_FF_VEICULOS_ID = '1548506117087297566'; // FF Veículos
+const WELCOME_IMAGE_URL = 'https://cdn.discordapp.net/attachments/1548529413715529768/1548529617361445006/9A95656B-B050-4937-9A4A-1F66AE4AD8B9.png?ex=6aa76417&is=6aa61297&hm=780d00c25aa1272979116f723d776d095201fde9f7bb12e1e24ea036b61c75c8';
 
 // Armazenamento temporário dos dados do modal por usuário
 const tempVerificationData = new Map();
@@ -110,6 +112,25 @@ async function connectToBaseVoiceChannel() {
     }
 }
 
+// Evento de Boas-Vindas Temático com a Imagem
+client.on('guildMemberAdd', async member => {
+    try {
+        const channel = member.guild.channels.cache.get(WELCOME_CHANNEL_ID);
+        if (!channel) return;
+
+        const embedWelcome = new EmbedBuilder()
+            .setTitle('🎭 Novo Membro na Sociedade Imperial')
+            .setDescription(`Saudações, ${member}. As portas da alta sociedade e das sombras se abriram para você.\n\nPara transitar em nosso meio com segurança e elegância, dirija-se ao canal de verificação, registre sua identidade na cidade e declare sua lealdade.`)
+            .setColor(0x0f0f0f)
+            .setImage(WELCOME_IMAGE_URL)
+            .setTimestamp();
+
+        await channel.send({ content: `Seja bem-vindo(a) aos domínios da Sociedade Imperial, ${member}!`, embeds: [embedWelcome] });
+    } catch (error) {
+        console.error('Erro ao enviar mensagem de boas-vindas:', error);
+    }
+});
+
 client.on('interactionCreate', async interaction => {
     if (interaction.isChatInputCommand()) {
         const { commandName } = interaction;
@@ -129,9 +150,10 @@ client.on('interactionCreate', async interaction => {
         
         else if (commandName === 'setup') {
             const embedVerif = new EmbedBuilder()
-                .setTitle('🎭 Sociedade Imperial - Verificação')
-                .setDescription('Bem-vindo aos domínios da Sociedade Imperial.\n\nPara iniciar sua identificação e liberar seu acesso, clique no botão abaixo.')
-                .setColor(0x111111);
+                .setTitle('🎭 Sociedade Imperial - Verificação Oficial')
+                .setDescription('Bem-vindo aos domínios da Sociedade Imperial.\n\nPara iniciar sua identificação, alterar seu apelido e liberar seu acesso, clique no botão abaixo.')
+                .setColor(0x0f0f0f)
+                .setImage(WELCOME_IMAGE_URL);
 
             const row = new ActionRowBuilder().addComponents(
                 new ButtonBuilder()
