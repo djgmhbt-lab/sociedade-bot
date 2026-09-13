@@ -106,7 +106,7 @@ async function connectToBaseVoiceChannel() {
     } catch (error) {
         console.error('Erro ao conectar no canal de voz 24h:', error);
     }
-});
+}
 
 // Evento de Boas-Vindas Temático com a Imagem
 client.on('guildMemberAdd', async member => {
